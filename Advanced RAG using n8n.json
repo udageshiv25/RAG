@@ -1,0 +1,355 @@
+{
+  "name": "Advanced RAG using n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Advanced RAG",
+        "formDescription": "Advanced RAG",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload PRD",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "7db177e4-eaac-4483-bd59-d1127c39d91d",
+      "name": "Ingest PRD",
+      "webhookId": "c586abd1-9bed-4976-bbf3-309c54b33259"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "newadvdb",
+          "mode": "list",
+          "cachedResultName": "newadvdb"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "487a5ec7-29dc-44da-96fd-334f9b10edd3",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "uxVtu3ndaiLVju4h",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        160
+      ],
+      "id": "e774929f-cba9-4f21-b91b-e866c3f32ce1",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        192
+      ],
+      "id": "e182abb4-d759-4b0d-a7b2-1912a546d79b",
+      "name": "Embeddings Azure OpenAI",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "bdacVXZ9H7Prq8Zr",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        64,
+        368
+      ],
+      "id": "fa206ba2-05ab-4456-87ad-1ac8e3a4d839",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -608,
+        592
+      ],
+      "id": "1d97b333-ec17-462a-a16b-8fa6c10d4806",
+      "name": "When chat message received",
+      "webhookId": "a86505ef-4912-446c-8e21-570e1e0cd86d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -304,
+        592
+      ],
+      "id": "1cd9a755-b6c8-4db0-a8f9-0a0ae3ecacec",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Database containing product requirement document of VWO.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "newadvdb",
+          "mode": "list",
+          "cachedResultName": "newadvdb"
+        },
+        "topK": 20,
+        "useReranker": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        896
+      ],
+      "id": "e1c039f9-0944-4bd0-a2d2-a307d1408837",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "uxVtu3ndaiLVju4h",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        32,
+        1104
+      ],
+      "id": "044752f7-ca98-418f-ac87-fa9959e12e47",
+      "name": "Embeddings Azure OpenAI1",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "bdacVXZ9H7Prq8Zr",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        960
+      ],
+      "id": "99c61974-d95c-45b6-8ad4-bc420f050c70",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        800
+      ],
+      "id": "8141286c-b954-4626-bc7e-3bf645c6d3cc",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "enAJbhj3liyLu1GL",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        128,
+        1152
+      ],
+      "id": "2dd312e9-1f60-4e9c-b0f0-bf05fe79d040",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "yiSPMU5Ncc1diA5z",
+          "name": "CohereApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ingest PRD": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Azure OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Azure OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c4d0d796-da86-482f-9fc0-770c3b78d834",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f39839a490f37837adb33fb4bfd2331174e14ce9d867aed1812983d11a8f6655"
+  },
+  "id": "bL8YEDnwFUl23icn",
+  "tags": []
+}
